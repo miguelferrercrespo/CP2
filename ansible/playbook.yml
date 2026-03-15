@@ -1,0 +1,42 @@
+---
+# Etapa 1: Preparar el registry y subir las imágenes
+- name: Build and upload container images to ACR
+  hosts: registry
+  gather_facts: false
+
+  vars_files:
+    - secrets.yml
+
+  tasks:
+    - name: Execute ACR role to manage container images
+      ansible.builtin.include_role:
+        name: acr
+
+
+# Etapa 2: Configurar el servidor web en la VM
+- name: Configure containerized web service on VM
+  hosts: web
+  gather_facts: true
+  become: true
+
+  vars_files:
+    - secrets.yml
+
+  tasks:
+    - name: Install runtime and deploy web container
+      ansible.builtin.include_role:
+        name: vm
+
+
+# Etapa 3: Desplegar aplicación en el clúster AKS
+- name: Deploy workloads to Kubernetes cluster
+  hosts: kubernetes
+  gather_facts: false
+
+  vars_files:
+    - secrets.yml
+
+  tasks:
+    - name: Launch AKS deployment role
+      ansible.builtin.include_role:
+        name: aks

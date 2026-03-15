@@ -1,0 +1,12 @@
+---
+# Nombre del contenedor que ejecutará el servidor web
+web_container_name: webserver
+
+# Puerto expuesto en la VM
+web_container_port: 80
+
+# Directorio raíz opcional para datos persistentes
+web_volume_root: /opt/webserver
+
+# Texto mostrado en el prompt de autenticación HTTP
+web_auth_realm: "Restricted Area"

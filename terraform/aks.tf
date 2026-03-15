@@ -1,3 +1,4 @@
+#Clúster de kubernetes en aks
 resource "azurerm_kubernetes_cluster" "aks" {
   name                              = var.aks_name
   location                          = azurerm_resource_group.rg.location
@@ -7,6 +8,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   role_based_access_control_enabled = true
   tags                              = local.common_tags
 
+#se define el nodo
   default_node_pool {
     name       = "default"
     node_count = var.aks_node_count

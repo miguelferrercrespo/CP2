@@ -1,0 +1,8 @@
+# Imagen HTTP ligera basada en Apache
+FROM docker.io/library/httpd:2.4-alpine
+
+# Copiamos la página web al directorio público
+COPY index.html /usr/local/apache2/htdocs/
+
+# Puerto web estándar
+EXPOSE 80

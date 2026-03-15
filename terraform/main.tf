@@ -7,7 +7,7 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 4.0"
     }
-    # par de claves para la máquina
+    # Declara el provider TLS de Terraform
     tls = {
       source  = "hashicorp/tls"
       version = "~> 4.0"
@@ -15,6 +15,7 @@ terraform {
   }
 }
 
+# Configura el provider de Azure Resource Manager
 provider "azurerm" {
   features {}
   subscription_id = var.subscription_id

@@ -1,0 +1,14 @@
+---
+# Directorio temporal donde se generan los contextos de build
+acr_build_path: "{{ playbook_dir }}/.build"
+
+# Definición de las imágenes que se construirán y subirán al ACR
+acr_images:
+  - name: "{{ web_image_name }}"
+    context: "{{ acr_build_path }}/webserver"
+
+  - name: "{{ app_frontend_image_name }}"
+    context: "{{ acr_build_path }}/frontend"
+
+  - name: "{{ app_backend_image_name }}"
+    context: "{{ acr_build_path }}/backend"

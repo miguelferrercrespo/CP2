@@ -1,0 +1,14 @@
+# Nginx ligero para servir la web protegida
+FROM docker.io/library/nginx:1.27-alpine
+
+# Copiamos configuración personalizada
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copiamos contenido web
+COPY index.html /usr/share/nginx/html/
+
+# Copiamos fichero de autenticación
+COPY .htpasswd /etc/nginx/auth/.htpasswd
+
+# Puerto HTTP
+EXPOSE 80

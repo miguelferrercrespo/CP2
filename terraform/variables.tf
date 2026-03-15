@@ -1,6 +1,5 @@
-############################
 # Autenticación Azure
-############################
+
 variable "subscription_id" {
   description = "Identificador de la suscripción de Azure donde se desplegarán los recursos."
   type        = string
@@ -22,12 +21,11 @@ variable "location" {
 variable "resource_group_name" {
   description = "Nombre del grupo de recursos principal que contendrá la infraestructura."
   type        = string
-  default     = "rg-cp2"
+  default     = "resource_group-cp2"
 }
 
-############################
 # Red y Máquina Virtual
-############################
+
 variable "vnet_name" {
   description = "Nombre de la red virtual del entorno CP2."
   type        = string
@@ -88,13 +86,12 @@ variable "vm_admin_username" {
   default     = "azureuser"
 }
 
-############################
 # ACR y AKS
-############################
+
 variable "acr_name" {
   description = "Nombre del Azure Container Registry donde se almacenarán las imágenes."
   type        = string
-  default     = "acrmiguel.ferrercp2"
+  default     = "acrmiguelferrercp2"
 }
 
 variable "aks_name" {

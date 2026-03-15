@@ -1,0 +1,116 @@
+---
+- name: Refresh apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+
+- name: Ensure container tooling is installed
+  ansible.builtin.apt:
+    name:
+      - podman
+      - apache2-utils
+    state: present
+  become: true
+
+
+# Crear los directorios donde se construyen las imágenes
+- name: Prepare build contexts
+  ansible.builtin.file:
+    path: "{{ item.context }}"
+    state: directory
+    mode: "0755"
+  loop: "{{ acr_images }}"
+
+
+####################################
+# WEB SERVER IMAGE
+####################################
+
+- name: Generate Containerfile for webserver
+  ansible.builtin.template:
+    src: webserver/Containerfile.j2
+    dest: "{{ acr_build_path }}/webserver/Containerfile"
+
+- name: Generate nginx configuration
+  ansible.builtin.template:
+    src: webserver/nginx.conf.j2
+    dest: "{{ acr_build_path }}/webserver/nginx.conf"
+
+- name: Generate landing page
+  ansible.builtin.template:
+    src: webserver/index.html.j2
+    dest: "{{ acr_build_path }}/webserver/index.html"
+
+- name: Create htpasswd authentication file
+  ansible.builtin.command:
+    cmd: >
+      htpasswd -bc
+      {{ acr_build_path }}/webserver/.htpasswd
+      {{ web_basic_auth_user }}
+      {{ web_basic_auth_password }}
+  no_log: true
+  changed_when: true
+
+
+####################################
+# FRONTEND IMAGE
+####################################
+
+- name: Generate frontend Containerfile
+  ansible.builtin.template:
+    src: frontend/Containerfile.j2
+    dest: "{{ acr_build_path }}/frontend/Containerfile"
+
+- name: Generate frontend index
+  ansible.builtin.template:
+    src: frontend/index.html.j2
+    dest: "{{ acr_build_path }}/frontend/index.html"
+
+
+####################################
+# BACKEND IMAGE
+####################################
+
+- name: Generate backend Containerfile
+  ansible.builtin.template:
+    src: backend/Containerfile.j2
+    dest: "{{ acr_build_path }}/backend/Containerfile"
+
+
+####################################
+# BUILD IMAGES
+####################################
+
+- name: Build container images locally
+  ansible.builtin.command:
+    cmd: >
+      podman build
+      -t {{ acr_login_server }}/{{ item.name }}:{{ container_image_tag }}
+      .
+    chdir: "{{ item.context }}"
+  loop: "{{ acr_images }}"
+  changed_when: true
+
+
+####################################
+# LOGIN TO ACR
+####################################
+
+- name: Authenticate to Azure Container Registry
+  containers.podman.podman_login:
+    registry: "{{ acr_login_server }}"
+    username: "{{ acr_username }}"
+    password: "{{ acr_password }}"
+  no_log: true
+
+
+####################################
+# PUSH IMAGES
+####################################
+
+- name: Push images to registry
+  containers.podman.podman_image:
+    name: "{{ acr_login_server }}/{{ item.name }}:{{ container_image_tag }}"
+    push: true
+  loop: "{{ acr_images }}"
