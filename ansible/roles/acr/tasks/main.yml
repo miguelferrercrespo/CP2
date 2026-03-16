@@ -15,6 +15,7 @@
 
 
 # Crear los directorios donde se construyen las imágenes
+
 - name: Prepare build contexts
   ansible.builtin.file:
     path: "{{ item.context }}"
@@ -23,9 +24,7 @@
   loop: "{{ acr_images }}"
 
 
-####################################
 # WEB SERVER IMAGE
-####################################
 
 - name: Generate Containerfile for webserver
   ansible.builtin.template:
@@ -53,9 +52,7 @@
   changed_when: true
 
 
-####################################
 # FRONTEND IMAGE
-####################################
 
 - name: Generate frontend Containerfile
   ansible.builtin.template:
@@ -68,9 +65,7 @@
     dest: "{{ acr_build_path }}/frontend/index.html"
 
 
-####################################
 # BACKEND IMAGE
-####################################
 
 - name: Generate backend Containerfile
   ansible.builtin.template:
@@ -78,9 +73,7 @@
     dest: "{{ acr_build_path }}/backend/Containerfile"
 
 
-####################################
 # BUILD IMAGES
-####################################
 
 - name: Build container images locally
   ansible.builtin.command:
@@ -93,9 +86,7 @@
   changed_when: true
 
 
-####################################
 # LOGIN TO ACR
-####################################
 
 - name: Authenticate to Azure Container Registry
   containers.podman.podman_login:
@@ -105,9 +96,7 @@
   no_log: true
 
 
-####################################
 # PUSH IMAGES
-####################################
 
 - name: Push images to registry
   containers.podman.podman_image:
