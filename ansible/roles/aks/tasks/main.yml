@@ -6,9 +6,7 @@
   become: true
 
 
-########################################
 # DEPENDENCIES
-########################################
 
 - name: Ensure Kubernetes python client is installed
   ansible.builtin.apt:
@@ -17,9 +15,7 @@
   become: true
 
 
-########################################
 # AKS AUTHENTICATION
-########################################
 
 - name: Retrieve kubeconfig from AKS
   ansible.builtin.command:
@@ -31,9 +27,7 @@
   changed_when: true
 
 
-########################################
 # NAMESPACE
-########################################
 
 - name: Ensure application namespace exists
   kubernetes.core.k8s:
@@ -45,9 +39,7 @@
         name: "{{ app_namespace }}"
 
 
-########################################
 # ACR IMAGE PULL SECRET
-########################################
 
 - name: Generate docker auth configuration
   ansible.builtin.set_fact:
@@ -81,9 +73,7 @@
   no_log: true
 
 
-########################################
 # APPLICATION DEPLOYMENT
-########################################
 
 - name: Deploy backend, pvc and frontend resources
   kubernetes.core.k8s:
